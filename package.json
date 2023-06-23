@@ -1,0 +1,28 @@
+{
+  "name": "tslckb",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "@pinecone-database/pinecone": "^0.1.6",
+    "axios": "^1.4.0",
+    "dotenv": "^16.1.4",
+    "langchain": "^0.0.96",
+    "lodash": "^4.17.21",
+    "openai": "^3.3.0",
+    "ts-node": "^10.9.1"
+  },
+  "devDependencies": {
+    "@tsconfig/recommended": "^1.0.2",
+    "@types/node": "^18.14.1",
+    "tsconfig-paths": "^3.14.2",
+    "tsx": "^3.12.3",
+    "typescript": "^4.9.5"
+  },
+  "scripts": {
+    "start": "tsx -r dotenv/config src/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
