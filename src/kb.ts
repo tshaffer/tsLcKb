@@ -1,5 +1,11 @@
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+import { OpenAIEmbeddings } from "langchain/embeddings";
+import { Document } from "langchain/document";
+import { FaissStore } from "langchain/vectorstores/faiss";
+
 import * as fs from "fs";
+import { VectorStoreRetriever } from "langchain/dist/vectorstores/base";
+import { VectorStore } from "langchain/dist/vectorstores/base";
 
 export const run = async () => {
   try {
@@ -18,13 +24,29 @@ export const run = async () => {
       "utf8"
     );
 
-    const texts = await textSplitter.createDocuments([text])
-    console.log('Number of documents created from splitter: ', texts.length);
+    const docs = await textSplitter.createDocuments([text])
+    console.log('Number of documents created from splitter: ', docs.length);
 
     console.log('Preview');
-    console.log(texts[0].pageContent + '\n');
-    console.log(texts[1].pageContent + '\n');
+    console.log(docs[0].pageContent + '\n');
+    console.log(docs[1].pageContent + '\n');
 
+    const embeddings = new OpenAIEmbeddings();
+
+    const db: FaissStore = await FaissStore.fromDocuments(docs, embeddings);
+
+    const retriever: VectorStoreRetriever<FaissStore> = db.asRetriever();
+    // const query = 'Where are the paper towels?';
+    // const query = 'Where does Lori store paper towels?';
+    const query = 'Where is the rat poop broom?';
+    const answers: Document[] = await retriever.getRelevantDocuments(query);
+    console.log('answers');
+    console.log(answers);
+
+    const similarity = await db.similaritySearch(query, 1);
+    console.log('similarity');
+    console.log(similarity);
+    console.log(similarity[0].metadata);
 
   } catch (error) {
     console.log("error", error);
