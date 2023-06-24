@@ -1,42 +1,83 @@
 import { OpenAI } from "langchain/llms/openai";
-import { loadQAStuffChain, loadQAMapReduceChain } from "langchain/chains";
-import { Document } from "langchain/document";
-import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
-import { OpenAIEmbeddings } from "langchain/embeddings/openai";
-import { TextLoader } from "langchain/document_loaders/fs/text";
-
+import { ConversationalRetrievalQAChain } from "langchain/chains";
 import { FaissStore } from "langchain/vectorstores/faiss";
-
+import { OpenAIEmbeddings } from "langchain/embeddings/openai";
+import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+import { BufferMemory } from "langchain/memory";
 import * as fs from "fs";
-import { VectorStoreRetriever } from "langchain/dist/vectorstores/base";
-
-import { RetrievalQAChain } from "langchain/chains";
 
 export const run = async () => {
-  // Initialize the LLM to use to answer the question.
+  /* Initialize the LLM to use to answer the question */
   const model = new OpenAI({});
+  /* Load in the file we want to do question answering over */
   const text = fs.readFileSync("/Users/tedshaffer/Documents/Projects/ai/tsLcKb/src/state_of_the_union.txt", "utf8");
+  /* Split the text into chunks */
   const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 1000 });
   const docs = await textSplitter.createDocuments([text]);
-
-  // Create a vector store from the documents.
+  /* Create the vectorstore */
   const vectorStore = await FaissStore.fromDocuments(docs, new OpenAIEmbeddings());
-
-  // Create a chain that uses the OpenAI LLM and HNSWLib vector store.
-  const chain = RetrievalQAChain.fromLLM(model, vectorStore.asRetriever());
-  const res = await chain.call({
-    query: "What did the president say about Justice Breyer?",
-  });
-  console.log({ res });
-  /*
-  {
-    res: {
-      text: 'The president said that Justice Breyer was an Army veteran, Constitutional scholar,
-      and retiring Justice of the United States Supreme Court and thanked him for his service.'
+  /* Create the chain */
+  const chain = ConversationalRetrievalQAChain.fromLLM(
+    model,
+    vectorStore.asRetriever(),
+    {
+      memory: new BufferMemory({
+        memoryKey: "chat_history", // Must be set to "chat_history"
+      }),
     }
-  }
-  */
+  );
+  /* Ask it a question */
+  const question = "What did the president say about Justice Breyer?";
+  const res = await chain.call({ question });
+  console.log(res);
+  /* Ask it a follow up question */
+  const followUpRes = await chain.call({
+    question: "Was that nice?",
+  });
+  console.log(followUpRes);
 };
+
+
+
+// import { OpenAI } from "langchain/llms/openai";
+// import { loadQAStuffChain, loadQAMapReduceChain } from "langchain/chains";
+// import { Document } from "langchain/document";
+// import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+// import { OpenAIEmbeddings } from "langchain/embeddings/openai";
+// import { TextLoader } from "langchain/document_loaders/fs/text";
+
+// import { FaissStore } from "langchain/vectorstores/faiss";
+
+// import * as fs from "fs";
+// import { VectorStoreRetriever } from "langchain/dist/vectorstores/base";
+
+// import { RetrievalQAChain } from "langchain/chains";
+
+// export const run = async () => {
+//   // Initialize the LLM to use to answer the question.
+//   const model = new OpenAI({});
+//   const text = fs.readFileSync("/Users/tedshaffer/Documents/Projects/ai/tsLcKb/src/state_of_the_union.txt", "utf8");
+//   const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 1000 });
+//   const docs = await textSplitter.createDocuments([text]);
+
+//   // Create a vector store from the documents.
+//   const vectorStore = await FaissStore.fromDocuments(docs, new OpenAIEmbeddings());
+
+//   // Create a chain that uses the OpenAI LLM and HNSWLib vector store.
+//   const chain = RetrievalQAChain.fromLLM(model, vectorStore.asRetriever());
+//   const res = await chain.call({
+//     query: "What did the president say about Justice Breyer?",
+//   });
+//   console.log({ res });
+//   /*
+//   {
+//     res: {
+//       text: 'The president said that Justice Breyer was an Army veteran, Constitutional scholar,
+//       and retiring Justice of the United States Supreme Court and thanked him for his service.'
+//     }
+//   }
+//   */
+// };
 
 // export const run = async () => {
 //   try {
