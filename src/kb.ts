@@ -10,63 +10,144 @@ import { FaissStore } from "langchain/vectorstores/faiss";
 import * as fs from "fs";
 import { VectorStoreRetriever } from "langchain/dist/vectorstores/base";
 
+import { RetrievalQAChain } from "langchain/chains";
+
 export const run = async () => {
-  try {
+  // Initialize the LLM to use to answer the question.
+  const model = new OpenAI({});
+  const text = fs.readFileSync("/Users/tedshaffer/Documents/Projects/ai/tsLcKb/src/state_of_the_union.txt", "utf8");
+  const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 1000 });
+  const docs = await textSplitter.createDocuments([text]);
 
-    const llmA = new OpenAI({});
-    const chainA = loadQAStuffChain(llmA);
+  // Create a vector store from the documents.
+  const vectorStore = await FaissStore.fromDocuments(docs, new OpenAIEmbeddings());
 
-    // const loader = new TextLoader("/Users/tedshaffer/Documents/Projects/ai/tsLcKb/src/example.txt");
-    // const docs = await loader.load();
-
-    //split text into chunks
-    const textSplitter = new RecursiveCharacterTextSplitter({
-      chunkSize: 150,
-      chunkOverlap: 20,
-    });
-
-    const text = fs.readFileSync(
-      require.resolve("/Users/tedshaffer/Documents/Projects/ai/tsLcKb/src/example.txt"),
-      "utf8"
-    );
-
-    const docs = await textSplitter.createDocuments([text])
-
-    const resA = await chainA.call({
-      input_documents: docs,
-      question: "Where is the rat poop broom?",
-    });
-    console.log({ resA });
-
-    return;
-
-    console.log('Number of documents created from splitter: ', docs.length);
-
-    console.log('Preview');
-    console.log(docs[0].pageContent + '\n');
-    console.log(docs[1].pageContent + '\n');
-
-    const embeddings = new OpenAIEmbeddings();
-
-    const db: FaissStore = await FaissStore.fromDocuments(docs, embeddings);
-
-    const retriever: VectorStoreRetriever<FaissStore> = db.asRetriever();
-    // const query = 'Where are the paper towels?';
-    // const query = 'Where does Lori store paper towels?';
-    const query = 'Where is the rat poop broom?';
-    const answers: Document[] = await retriever.getRelevantDocuments(query);
-    console.log('answers');
-    console.log(answers);
-
-    const similarity = await db.similaritySearch(query, 1);
-    console.log('similarity');
-    console.log(similarity);
-    console.log(similarity[0].metadata);
-
-  } catch (error) {
-    console.log("error", error);
+  // Create a chain that uses the OpenAI LLM and HNSWLib vector store.
+  const chain = RetrievalQAChain.fromLLM(model, vectorStore.asRetriever());
+  const res = await chain.call({
+    query: "What did the president say about Justice Breyer?",
+  });
+  console.log({ res });
+  /*
+  {
+    res: {
+      text: 'The president said that Justice Breyer was an Army veteran, Constitutional scholar,
+      and retiring Justice of the United States Supreme Court and thanked him for his service.'
+    }
   }
+  */
 };
+
+// export const run = async () => {
+//   try {
+
+//     const llmA = new OpenAI({});
+//     const chainA = loadQAStuffChain(llmA);
+
+//     // const loader = new TextLoader("/Users/tedshaffer/Documents/Projects/ai/tsLcKb/src/example.txt");
+//     // const docs = await loader.load();
+
+//     //split text into chunks
+//     const textSplitter = new RecursiveCharacterTextSplitter({
+//       chunkSize: 150,
+//       chunkOverlap: 20,
+//     });
+
+//     const text = fs.readFileSync(
+//       require.resolve("/Users/tedshaffer/Documents/Projects/ai/tsLcKb/src/example.txt"),
+//       "utf8"
+//     );
+
+//     const docs = await textSplitter.createDocuments([text])
+
+//     const resA = await chainA.call({
+//       input_documents: docs,
+//       question: "Where is the rat poop broom?",
+//     });
+//     console.log({ resA });
+
+//   } catch (error) {
+//     console.log("error", error);
+//   }
+// };
+
+// export const run = async () => {
+//   try {
+
+//     const llmA = new OpenAI({});
+//     const chainA = loadQAStuffChain(llmA);
+
+//     // const loader = new TextLoader("/Users/tedshaffer/Documents/Projects/ai/tsLcKb/src/example.txt");
+//     // const docs = await loader.load();
+
+//     //split text into chunks
+//     const textSplitter = new RecursiveCharacterTextSplitter({
+//       chunkSize: 150,
+//       chunkOverlap: 20,
+//     });
+
+//     const text = fs.readFileSync(
+//       require.resolve("/Users/tedshaffer/Documents/Projects/ai/tsLcKb/src/example.txt"),
+//       "utf8"
+//     );
+
+//     const docs = await textSplitter.createDocuments([text])
+
+//     const resA = await chainA.call({
+//       input_documents: docs,
+//       question: "Where is the rat poop broom?",
+//     });
+//     console.log({ resA });
+
+//   } catch (error) {
+//     console.log("error", error);
+//   }
+// };
+
+// export const run = async () => {
+//   try {
+
+//     const llmA = new OpenAI({});
+
+//     //split text into chunks
+//     const textSplitter = new RecursiveCharacterTextSplitter({
+//       chunkSize: 150,
+//       chunkOverlap: 20,
+//     });
+
+//     const text = fs.readFileSync(
+//       require.resolve("/Users/tedshaffer/Documents/Projects/ai/tsLcKb/src/example.txt"),
+//       "utf8"
+//     );
+
+//     const docs = await textSplitter.createDocuments([text])
+//     console.log('Number of documents created from splitter: ', docs.length);
+
+//     console.log('Preview');
+//     console.log(docs[0].pageContent + '\n');
+//     console.log(docs[1].pageContent + '\n');
+
+//     const embeddings = new OpenAIEmbeddings();
+
+//     const db: FaissStore = await FaissStore.fromDocuments(docs, embeddings);
+
+//     const retriever: VectorStoreRetriever<FaissStore> = db.asRetriever();
+//     // const query = 'Where are the paper towels?';
+//     // const query = 'Where does Lori store paper towels?';
+//     const query = 'Where is the rat poop broom?';
+//     const answers: Document[] = await retriever.getRelevantDocuments(query);
+//     console.log('answers');
+//     console.log(answers);
+
+//     const similarity = await db.similaritySearch(query, 1);
+//     console.log('similarity');
+//     console.log(similarity);
+//     console.log(similarity[0].metadata);
+
+//   } catch (error) {
+//     console.log("error", error);
+//   }
+// };
 
 
 
