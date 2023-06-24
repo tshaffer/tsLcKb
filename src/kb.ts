@@ -1,6 +1,10 @@
-import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
-import { OpenAIEmbeddings } from "langchain/embeddings";
+import { OpenAI } from "langchain/llms/openai";
+import { loadQAStuffChain, loadQAMapReduceChain } from "langchain/chains";
 import { Document } from "langchain/document";
+import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+import { OpenAIEmbeddings } from "langchain/embeddings/openai";
+import { TextLoader } from "langchain/document_loaders/fs/text";
+
 import { FaissStore } from "langchain/vectorstores/faiss";
 
 import * as fs from "fs";
@@ -8,6 +12,9 @@ import { VectorStoreRetriever } from "langchain/dist/vectorstores/base";
 
 export const run = async () => {
   try {
+
+    const llmA = new OpenAI({});
+    const chainA = loadQAStuffChain(llmA);
 
     // const loader = new TextLoader("/Users/tedshaffer/Documents/Projects/ai/tsLcKb/src/example.txt");
     // const docs = await loader.load();
@@ -24,6 +31,15 @@ export const run = async () => {
     );
 
     const docs = await textSplitter.createDocuments([text])
+
+    const resA = await chainA.call({
+      input_documents: docs,
+      question: "Where is the rat poop broom?",
+    });
+    console.log({ resA });
+
+    return;
+
     console.log('Number of documents created from splitter: ', docs.length);
 
     console.log('Preview');
