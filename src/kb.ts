@@ -9,37 +9,37 @@ import { VectorStoreRetriever } from "langchain/dist/vectorstores/base";
 import { RetrievalQAChain } from "langchain/chains";
 import { ChatOpenAI } from 'langchain/chat_models/openai';
 
-export const run = async () => {
+// export const run = async () => {
 
-  // const chat = new ChatOpenAI({});
+//   // const chat = new ChatOpenAI({});
 
-  /* Initialize the LLM to use to answer the question */
-  const model = new ChatOpenAI(
-    {
-      modelName: 'gpt-3.5-turbo',
-    }
-  );
-  /* Load in the file we want to do question answering over */
-  const text = fs.readFileSync("/Users/tedshaffer/Documents/Projects/ai/tsLcKb/src/state_of_the_union.txt", "utf8");
-  /* Split the text into chunks */
-  const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 1000 });
-  const docs = await textSplitter.createDocuments([text]);
+//   /* Initialize the LLM to use to answer the question */
+//   const model = new ChatOpenAI(
+//     {
+//       modelName: 'gpt-3.5-turbo',
+//     }
+//   );
+//   /* Load in the file we want to do question answering over */
+//   const text = fs.readFileSync("/Users/tedshaffer/Documents/Projects/ai/tsLcKb/src/state_of_the_union.txt", "utf8");
+//   /* Split the text into chunks */
+//   const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 1000 });
+//   const docs = await textSplitter.createDocuments([text]);
 
-  const embeddings = new OpenAIEmbeddings();
+//   const embeddings = new OpenAIEmbeddings();
 
-  const db: FaissStore = await FaissStore.fromDocuments(docs, embeddings);
+//   const db: FaissStore = await FaissStore.fromDocuments(docs, embeddings);
 
-  const retriever: VectorStoreRetriever<FaissStore> = db.asRetriever();
+//   const retriever: VectorStoreRetriever<FaissStore> = db.asRetriever();
   
-  const chain: RetrievalQAChain = RetrievalQAChain.fromLLM(model, retriever);
+//   const chain: RetrievalQAChain = RetrievalQAChain.fromLLM(model, retriever);
 
-  const res = await chain.call({
-    // query: "What did the president say about Justice Breyer?",
-    query: "What is the capital city of France??",
-  });
-  console.log({ res });
+//   const res = await chain.call({
+//     // query: "What did the president say about Justice Breyer?",
+//     query: "What is the capital city of France??",
+//   });
+//   console.log({ res });
 
-};
+// };
 
 // export const run = async () => {
 //   /* Initialize the LLM to use to answer the question */
@@ -75,7 +75,7 @@ export const run = async () => {
 
 
 // import { OpenAI } from "langchain/llms/openai";
-// import { loadQAStuffChain, loadQAMapReduceChain } from "langchain/chains";
+import { loadQAStuffChain, loadQAMapReduceChain } from "langchain/chains";
 // import { Document } from "langchain/document";
 // import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 // import { OpenAIEmbeddings } from "langchain/embeddings/openai";
@@ -115,38 +115,38 @@ export const run = async () => {
 //   */
 // };
 
-// export const run = async () => {
-//   try {
+export const run = async () => {
+  try {
 
-//     const llmA = new OpenAI({});
-//     const chainA = loadQAStuffChain(llmA);
+    const llmA = new OpenAI({});
+    const chainA = loadQAStuffChain(llmA);
 
-//     // const loader = new TextLoader("/Users/tedshaffer/Documents/Projects/ai/tsLcKb/src/example.txt");
-//     // const docs = await loader.load();
+    // const loader = new TextLoader("/Users/tedshaffer/Documents/Projects/ai/tsLcKb/src/example.txt");
+    // const docs = await loader.load();
 
-//     //split text into chunks
-//     const textSplitter = new RecursiveCharacterTextSplitter({
-//       chunkSize: 150,
-//       chunkOverlap: 20,
-//     });
+    //split text into chunks
+    const textSplitter = new RecursiveCharacterTextSplitter({
+      chunkSize: 150,
+      chunkOverlap: 20,
+    });
 
-//     const text = fs.readFileSync(
-//       require.resolve("/Users/tedshaffer/Documents/Projects/ai/tsLcKb/src/example.txt"),
-//       "utf8"
-//     );
+    const text = fs.readFileSync(
+      require.resolve("/Users/tedshaffer/Documents/Projects/ai/tsLcKb/src/example.txt"),
+      "utf8"
+    );
 
-//     const docs = await textSplitter.createDocuments([text])
+    const docs = await textSplitter.createDocuments([text])
 
-//     const resA = await chainA.call({
-//       input_documents: docs,
-//       question: "Where is the rat poop broom?",
-//     });
-//     console.log({ resA });
+    const resA = await chainA.call({
+      input_documents: docs,
+      question: "Where is the rat poop broom?",
+    });
+    console.log({ resA });
 
-//   } catch (error) {
-//     console.log("error", error);
-//   }
-// };
+  } catch (error) {
+    console.log("error", error);
+  }
+};
 
 // export const run = async () => {
 //   try {
