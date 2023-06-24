@@ -5,7 +5,6 @@ import { FaissStore } from "langchain/vectorstores/faiss";
 
 import * as fs from "fs";
 import { VectorStoreRetriever } from "langchain/dist/vectorstores/base";
-import { VectorStore } from "langchain/dist/vectorstores/base";
 
 export const run = async () => {
   try {
