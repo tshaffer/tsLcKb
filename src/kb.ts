@@ -5,37 +5,72 @@ import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { BufferMemory } from "langchain/memory";
 import * as fs from "fs";
+import { VectorStoreRetriever } from "langchain/dist/vectorstores/base";
+import { RetrievalQAChain } from "langchain/chains";
+import { ChatOpenAI } from 'langchain/chat_models/openai';
 
 export const run = async () => {
+
+  // const chat = new ChatOpenAI({});
+
   /* Initialize the LLM to use to answer the question */
-  const model = new OpenAI({});
+  const model = new ChatOpenAI(
+    {
+      modelName: 'gpt-3.5-turbo',
+    }
+  );
   /* Load in the file we want to do question answering over */
   const text = fs.readFileSync("/Users/tedshaffer/Documents/Projects/ai/tsLcKb/src/state_of_the_union.txt", "utf8");
   /* Split the text into chunks */
   const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 1000 });
   const docs = await textSplitter.createDocuments([text]);
-  /* Create the vectorstore */
-  const vectorStore = await FaissStore.fromDocuments(docs, new OpenAIEmbeddings());
-  /* Create the chain */
-  const chain = ConversationalRetrievalQAChain.fromLLM(
-    model,
-    vectorStore.asRetriever(),
-    {
-      memory: new BufferMemory({
-        memoryKey: "chat_history", // Must be set to "chat_history"
-      }),
-    }
-  );
-  /* Ask it a question */
-  const question = "What did the president say about Justice Breyer?";
-  const res = await chain.call({ question });
-  console.log(res);
-  /* Ask it a follow up question */
-  const followUpRes = await chain.call({
-    question: "Was that nice?",
+
+  const embeddings = new OpenAIEmbeddings();
+
+  const db: FaissStore = await FaissStore.fromDocuments(docs, embeddings);
+
+  const retriever: VectorStoreRetriever<FaissStore> = db.asRetriever();
+  
+  const chain: RetrievalQAChain = RetrievalQAChain.fromLLM(model, retriever);
+
+  const res = await chain.call({
+    // query: "What did the president say about Justice Breyer?",
+    query: "What is the capital city of France??",
   });
-  console.log(followUpRes);
+  console.log({ res });
+
 };
+
+// export const run = async () => {
+//   /* Initialize the LLM to use to answer the question */
+//   const model = new OpenAI({});
+//   /* Load in the file we want to do question answering over */
+//   const text = fs.readFileSync("/Users/tedshaffer/Documents/Projects/ai/tsLcKb/src/state_of_the_union.txt", "utf8");
+//   /* Split the text into chunks */
+//   const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 1000 });
+//   const docs = await textSplitter.createDocuments([text]);
+//   /* Create the vectorstore */
+//   const vectorStore = await FaissStore.fromDocuments(docs, new OpenAIEmbeddings());
+//   /* Create the chain */
+//   const chain = ConversationalRetrievalQAChain.fromLLM(
+//     model,
+//     vectorStore.asRetriever(),
+//     {
+//       memory: new BufferMemory({
+//         memoryKey: "chat_history", // Must be set to "chat_history"
+//       }),
+//     }
+//   );
+//   /* Ask it a question */
+//   const question = "What did the president say about Justice Breyer?";
+//   const res = await chain.call({ question });
+//   console.log(res);
+//   /* Ask it a follow up question */
+//   const followUpRes = await chain.call({
+//     question: "Was that nice?",
+//   });
+//   console.log(followUpRes);
+// };
 
 
 
@@ -52,6 +87,7 @@ export const run = async () => {
 // import { VectorStoreRetriever } from "langchain/dist/vectorstores/base";
 
 // import { RetrievalQAChain } from "langchain/chains";
+// import { ChatOpenAI } from "langchain/dist/chat_models/openai";
 
 // export const run = async () => {
 //   // Initialize the LLM to use to answer the question.
