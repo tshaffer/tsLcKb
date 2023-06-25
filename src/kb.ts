@@ -45,7 +45,9 @@ export const run = async () => {
   console.log(csvDocs.length);
   // console.log(csvDocs[2]);
 
-  docs.push(csvDocs[3]);
+  csvDocs.forEach((csvDoc: Document<Record<string, any>>) => {
+    docs.push(csvDoc);
+  })
 
   // Create a vector store from the documents.
   const vectorStore = await FaissStore.fromDocuments(docs, new OpenAIEmbeddings());
