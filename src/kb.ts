@@ -63,6 +63,7 @@ export const run = async () => {
       returnSourceDocuments: true,
     }
   );
+  const query: string = "List the mountain bike trails in Bend Oregon that both Ted likes to ride?";
   const res = await chain.call({
     // query: "What did the president say about Justice Breyer?",
     // query: "What is Ted Shaffer's favorite food?",
@@ -71,12 +72,16 @@ export const run = async () => {
     // query: "Tell me about the Tiddlywinks mountain bike trail in Bend."
     // query: "Does Ted like the Tiddlywinks mountain bike trail in Bend."
     // query: "Does Lori ride Tiddlywinks?"
-    query: "What mountain bike trails does Ted like to ride?"
+    // query: "What mountain bike trails does Ted like to ride?"
     // query: "Who likes to ride Storm King?"
     // query: "What mountain bike trails does Morgan like?"
+    // query: "List the mountain bike trails in Bend Oregon that both Joel and Ted like to ride?"
+    // query: "List the mountain bike trails in Bend Oregon that both Morgan likes to ride?"
+    query
   });
 
-  console.log({ res });
+  console.log(query);
+  console.log(res.text);
   /*
   {
     res: {
