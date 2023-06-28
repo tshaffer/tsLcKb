@@ -72,7 +72,8 @@ export const run = async () => {
     // query: "Does Ted like the Tiddlywinks mountain bike trail in Bend."
     // query: "Does Lori ride Tiddlywinks?"
     // query: "What mountain bike trails does Ted like?"
-    query: "Who likes to ride Storm King?"
+    // query: "Who likes to ride Storm King?"
+    query: "What mountain bike trails does Morgan like?"
   });
 
   console.log({ res });
