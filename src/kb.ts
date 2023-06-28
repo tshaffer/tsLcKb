@@ -35,8 +35,11 @@ import { RetrievalQAChain } from "langchain/chains";
 
 export const run = async () => {
   // Initialize the LLM to use to answer the question.
-  const model = new OpenAI({});
-  const text = fs.readFileSync("/Users/tedshaffer/Documents/Projects/ai/tsLcKb/src/state_of_the_union.txt", "utf8");
+  const model = new OpenAI({
+    temperature: 0,
+  });
+  // const text = fs.readFileSync("/Users/tedshaffer/Documents/Projects/ai/tsLcKb/src/state_of_the_union.txt", "utf8");
+  const text = fs.readFileSync("/Users/tedshaffer/Documents/Projects/ai/tsLcKb/src/example.txt", "utf8");
   const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 1000 });
   const docs = await textSplitter.createDocuments([text]);
 
@@ -53,13 +56,25 @@ export const run = async () => {
   const vectorStore = await FaissStore.fromDocuments(docs, new OpenAIEmbeddings());
 
   // Create a chain that uses the OpenAI LLM and HNSWLib vector store.
-  const chain = RetrievalQAChain.fromLLM(model, vectorStore.asRetriever());
+  const chain = RetrievalQAChain.fromLLM(
+    model,
+    vectorStore.asRetriever(),
+    {
+      returnSourceDocuments: true,
+    }
+  );
   const res = await chain.call({
     // query: "What did the president say about Justice Breyer?",
     // query: "What is Ted Shaffer's favorite food?",
     // query: "Search the metadata to find the ingredients in the ooni pizza recipe",
-    query: "What is the list the ingredients in the ooni pizza recipe",
+    // query: "What is the list the ingredients in the ooni pizza recipe",
+    // query: "Tell me about the Tiddlywinks mountain bike trail in Bend."
+    // query: "Does Ted like the Tiddlywinks mountain bike trail in Bend."
+    // query: "Does Lori ride Tiddlywinks?"
+    // query: "What mountain bike trails does Ted like?"
+    query: "Who likes to ride Storm King?"
   });
+
   console.log({ res });
   /*
   {
