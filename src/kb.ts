@@ -80,8 +80,8 @@ export const run = async () => {
   const model = new OpenAI({});
   /* Load in the file we want to do question answering over */
   // const text = fs.readFileSync("state_of_the_union.txt", "utf8");
-  const text = fs.readFileSync("/Users/tedshaffer/Documents/Projects/ai/tsLcKb/src/state_of_the_union.txt", "utf8");
-    /* Split the text into chunks */
+  // const text = fs.readFileSync("/Users/tedshaffer/Documents/Projects/ai/tsLcKb/src/state_of_the_union.txt", "utf8");
+  const text = fs.readFileSync("/Users/tedshaffer/Documents/Projects/ai/tsLcKb/src/example.txt", "utf8");    /* Split the text into chunks */
   const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 1000 });
   const docs = await textSplitter.createDocuments([text]);
   /* Create the vectorstore */
@@ -97,12 +97,12 @@ export const run = async () => {
     }
   );
   /* Ask it a question */
-  const question = "What did the president say about Justice Breyer?";
+  const question = "What mountain bike trails does Morgan like?";
   const res = await chain.call({ question });
   console.log(res);
   /* Ask it a follow up question */
   const followUpRes = await chain.call({
-    question: "Was that nice?",
+    question: "Does Lori ride Tiddlywinks?",
   });
   console.log(followUpRes);
 };
