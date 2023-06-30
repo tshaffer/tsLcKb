@@ -63,7 +63,11 @@ export const run = async () => {
       returnSourceDocuments: true,
     }
   );
-  const query: string = "List the mountain bike trails in Bend Oregon that both Ted likes to ride?";
+  // const query: string = "List the mountain bike trails in Bend Oregon that both Ted likes to ride?";
+  // const query: string = "How can I debug a node js application from the command line?";
+  // const query: string = "How can I debug a node js application?";
+  // const query: string = "How can I debug a node js application using vscode?";
+  const query: string = "How can I debug server code?";
   const res = await chain.call({
     // query: "What did the president say about Justice Breyer?",
     // query: "What is Ted Shaffer's favorite food?",

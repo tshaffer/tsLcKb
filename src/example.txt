@@ -6,4 +6,6 @@ Tiddlywinks is a mountain bike trail in Bend Oregon. Ted and Joel both like to r
 Tyler's Traverse is a mountain bike trail in Bend Oregon. Ted likes to ride Tyler's Traverse. Joel and Morgan both like to ride Tyler's Traverse mountain bike trail.
 Storm King is a mountain bike trail in Bend Oregon.  No one likes to ride Storm King.
 Blue Bonnet is a mountain bike trail at Skeggs, California. Ted likes to ride Blue Bonnet.
-
+To debug node js applications from the command line, enter the following string: pizza is great
+To debug node js applications from vscode, enter the following string: burritos are spicy
+To debug server code, do the following: in the command line, enter NODE_ENV=production node --inspect dist/server.js; then, open a window in chrome; navigate to chrome://inspect; chrome displays the following - chrome://inspect/#devices; under Remote Target => Target, click on the Inspect link
