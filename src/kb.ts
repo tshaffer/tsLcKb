@@ -1,6 +1,6 @@
 import { CSVLoader } from "langchain/document_loaders/fs/csv";
 
-const prompt = require('prompt-sync')({sigint: true});
+const prompt = require('prompt-sync')({ sigint: true });
 
 // https://js.langchain.com/docs/modules/indexes/document_loaders/examples/file_loaders/csv
 
@@ -57,7 +57,6 @@ export const run = async () => {
   // Create a vector store from the documents.
   const vectorStore = await FaissStore.fromDocuments(docs, new OpenAIEmbeddings());
 
-  // Create a chain that uses the OpenAI LLM and HNSWLib vector store.
   const chain = RetrievalQAChain.fromLLM(
     model,
     vectorStore.asRetriever(),
@@ -70,27 +69,27 @@ export const run = async () => {
   // const query: string = "How can I debug a node js application?";
   // const query: string = "How can I debug a node js application using vscode?";
   // const query: string = "How can I debug server code?";
+  // query: "What did the president say about Justice Breyer?",
+  // query: "What is Ted Shaffer's favorite food?",
+  // query: "Search the metadata to find the ingredients in the ooni pizza recipe",
+  // query: "What is the list the ingredients in the ooni pizza recipe",
+  // query: "Tell me about the Tiddlywinks mountain bike trail in Bend."
+  // query: "Does Ted like the Tiddlywinks mountain bike trail in Bend."
+  // query: "Does Lori ride Tiddlywinks?"
+  // query: "What mountain bike trails does Ted like to ride?"
+  // query: "Who likes to ride Storm King?"
+  // query: "What mountain bike trails does Morgan like?"
+  // query: "List the mountain bike trails in Bend Oregon that both Joel and Ted like to ride?"
+  // query: "List the mountain bike trails in Bend Oregon that both Morgan likes to ride?"
+
+  while (true) {
+    const query = prompt('Enter your query: ');
+    const res = await chain.call({
+      query
+    });
+    console.log("Answer: " + res.text);
+  }
   
-  const query = prompt('Enter your query: ');
-
-  const res = await chain.call({
-    // query: "What did the president say about Justice Breyer?",
-    // query: "What is Ted Shaffer's favorite food?",
-    // query: "Search the metadata to find the ingredients in the ooni pizza recipe",
-    // query: "What is the list the ingredients in the ooni pizza recipe",
-    // query: "Tell me about the Tiddlywinks mountain bike trail in Bend."
-    // query: "Does Ted like the Tiddlywinks mountain bike trail in Bend."
-    // query: "Does Lori ride Tiddlywinks?"
-    // query: "What mountain bike trails does Ted like to ride?"
-    // query: "Who likes to ride Storm King?"
-    // query: "What mountain bike trails does Morgan like?"
-    // query: "List the mountain bike trails in Bend Oregon that both Joel and Ted like to ride?"
-    // query: "List the mountain bike trails in Bend Oregon that both Morgan likes to ride?"
-    query
-  });
-
-  // console.log(query);
-  console.log("Answer: " + res.text);
   /*
   {
     res: {
