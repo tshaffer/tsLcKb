@@ -97,12 +97,12 @@ export const run = async () => {
     }
   );
   /* Ask it a question */
-  const question = "What mountain bike trails does Morgan like?";
+  const question = "What is Ted's favorite trail?";
   const res = await chain.call({ question });
   console.log(res);
   /* Ask it a follow up question */
   const followUpRes = await chain.call({
-    question: "Does Lori ride Tiddlywinks?",
+    question: "Is it uphill or downhill?",
   });
   console.log(followUpRes);
 };
