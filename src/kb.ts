@@ -1,42 +1,16 @@
+import * as fs from "fs";
+
+import { OpenAI } from "langchain/llms/openai";
+import { Document } from "langchain/document";
 import { CSVLoader } from "langchain/document_loaders/fs/csv";
+import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+import { OpenAIEmbeddings } from "langchain/embeddings/openai";
+import { FaissStore } from "langchain/vectorstores/faiss";
+import { RetrievalQAChain } from "langchain/chains";
 
 const prompt = require('prompt-sync')({ sigint: true });
 
-// https://js.langchain.com/docs/modules/indexes/document_loaders/examples/file_loaders/csv
-
-// export const run = async () => {
-
-// const loader = new CSVLoader(
-//   "/Users/tedshaffer/Documents/Projects/ai/tsLcKb/src/example.csv",
-//   "text"
-// );
-
-// const docs = await loader.load();
-
-// console.log(docs);
-//   // const loader = new CSVLoader("/Users/tedshaffer/Documents/Projects/ai/tsLcKb/src/example.csv");
-
-//   // const docs = await loader.load();
-//   // console.log(docs);
-
-// };
-
-import { OpenAI } from "langchain/llms/openai";
-import { loadQAStuffChain, loadQAMapReduceChain } from "langchain/chains";
-import { Document } from "langchain/document";
-import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
-import { OpenAIEmbeddings } from "langchain/embeddings/openai";
-import { TextLoader } from "langchain/document_loaders/fs/text";
-
-import { FaissStore } from "langchain/vectorstores/faiss";
-
-import * as fs from "fs";
-import { VectorStoreRetriever } from "langchain/dist/vectorstores/base";
-
-import { RetrievalQAChain } from "langchain/chains";
-
 export const run = async () => {
-  // Initialize the LLM to use to answer the question.
   const model = new OpenAI({
     temperature: 0,
   });
@@ -48,13 +22,11 @@ export const run = async () => {
   const loader = new CSVLoader("/Users/tedshaffer/Documents/Projects/ai/tsLcKb/src/example.csv");
   const csvDocs = await loader.load();
   console.log(csvDocs.length);
-  // console.log(csvDocs[2]);
 
   csvDocs.forEach((csvDoc: Document<Record<string, any>>) => {
     docs.push(csvDoc);
   })
 
-  // Create a vector store from the documents.
   const vectorStore = await FaissStore.fromDocuments(docs, new OpenAIEmbeddings());
 
   const chain = RetrievalQAChain.fromLLM(
@@ -89,13 +61,4 @@ export const run = async () => {
     });
     console.log("Answer: " + res.text);
   }
-  
-  /*
-  {
-    res: {
-      text: 'The president said that Justice Breyer was an Army veteran, Constitutional scholar,
-      and retiring Justice of the United States Supreme Court and thanked him for his service.'
-    }
-  }
-  */
 };
