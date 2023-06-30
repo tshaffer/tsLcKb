@@ -1,5 +1,7 @@
 import { CSVLoader } from "langchain/document_loaders/fs/csv";
 
+const prompt = require('prompt-sync')({sigint: true});
+
 // https://js.langchain.com/docs/modules/indexes/document_loaders/examples/file_loaders/csv
 
 // export const run = async () => {
@@ -67,7 +69,10 @@ export const run = async () => {
   // const query: string = "How can I debug a node js application from the command line?";
   // const query: string = "How can I debug a node js application?";
   // const query: string = "How can I debug a node js application using vscode?";
-  const query: string = "How can I debug server code?";
+  // const query: string = "How can I debug server code?";
+  
+  const query = prompt('Enter your query: ');
+
   const res = await chain.call({
     // query: "What did the president say about Justice Breyer?",
     // query: "What is Ted Shaffer's favorite food?",
@@ -84,8 +89,8 @@ export const run = async () => {
     query
   });
 
-  console.log(query);
-  console.log(res.text);
+  // console.log(query);
+  console.log("Answer: " + res.text);
   /*
   {
     res: {
