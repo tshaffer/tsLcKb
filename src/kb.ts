@@ -113,7 +113,7 @@
 // import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 
 // export const run = async () => {
-//   const client = new MongoClient('mongodb+srv://ted:1s1GqO18mmEnt5v1@cluster0-ihsik.mongodb.net/mealWheel4?retryWrites=true&w=majority');
+//   const client = new MongoClient('XX');
 //   const namespace = "langchain.test";
 //   const [dbName, collectionName] = namespace.split(".");
 //   const collection = client.db(dbName).collection(collectionName);
@@ -138,7 +138,7 @@ import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { MongoClient } from "mongodb";
 
 export const run = async () => {
-  const client = new MongoClient('mongodb+srv://ted:1s1GqO18mmEnt5v1@cluster0-ihsik.mongodb.net/mealWheel4?retryWrites=true&w=majority');
+  const client = new MongoClient('XX');
   const namespace = "langchain.test";
   const [dbName, collectionName] = namespace.split(".");
   const collection = client.db(dbName).collection(collectionName);
