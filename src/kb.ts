@@ -108,9 +108,34 @@
 // };
 
 
+// import { MongoDBAtlasVectorSearch } from "langchain/vectorstores/mongodb_atlas";
+// import { MongoClient } from "mongodb";
+// import { OpenAIEmbeddings } from "langchain/embeddings/openai";
+
+// export const run = async () => {
+//   const client = new MongoClient('mongodb+srv://ted:1s1GqO18mmEnt5v1@cluster0-ihsik.mongodb.net/mealWheel4?retryWrites=true&w=majority');
+//   const namespace = "langchain.test";
+//   const [dbName, collectionName] = namespace.split(".");
+//   const collection = client.db(dbName).collection(collectionName);
+
+//   await MongoDBAtlasVectorSearch.fromTexts(
+//     ["Hello world", "Bye bye", "What's this?"],
+//     [{ id: 2 }, { id: 1 }, { id: 3 }],
+//     new OpenAIEmbeddings(),
+//     {
+//       collection,
+//       indexName: "default", // The name of the Atlas search index. Defaults to "default"
+//       textKey: "text", // The name of the collection field containing the raw content. Defaults to "text"
+//       embeddingKey: "embedding", // The name of the collection field containing the embedded text. Defaults to "embedding"
+//     }
+//   );
+
+//   await client.close();
+// };
+
 import { MongoDBAtlasVectorSearch } from "langchain/vectorstores/mongodb_atlas";
-import { MongoClient } from "mongodb";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
+import { MongoClient } from "mongodb";
 
 export const run = async () => {
   const client = new MongoClient('mongodb+srv://ted:1s1GqO18mmEnt5v1@cluster0-ihsik.mongodb.net/mealWheel4?retryWrites=true&w=majority');
@@ -118,17 +143,15 @@ export const run = async () => {
   const [dbName, collectionName] = namespace.split(".");
   const collection = client.db(dbName).collection(collectionName);
 
-  await MongoDBAtlasVectorSearch.fromTexts(
-    ["Hello world", "Bye bye", "What's this?"],
-    [{ id: 2 }, { id: 1 }, { id: 3 }],
-    new OpenAIEmbeddings(),
-    {
-      collection,
-      indexName: "default", // The name of the Atlas search index. Defaults to "default"
-      textKey: "text", // The name of the collection field containing the raw content. Defaults to "text"
-      embeddingKey: "embedding", // The name of the collection field containing the embedded text. Defaults to "embedding"
-    }
-  );
+  const vectorStore = new MongoDBAtlasVectorSearch(new OpenAIEmbeddings(), {
+    collection,
+    indexName: "default", // The name of the Atlas search index. Defaults to "default"
+    textKey: "text", // The name of the collection field containing the raw content. Defaults to "text"
+    embeddingKey: "embedding", // The name of the collection field containing the embedded text. Defaults to "embedding"
+  });
+
+  const resultOne = await vectorStore.similaritySearch("Hello world", 1);
+  console.log(resultOne);
 
   await client.close();
 };
